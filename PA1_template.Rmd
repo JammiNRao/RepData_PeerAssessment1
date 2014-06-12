@@ -1,12 +1,50 @@
 # Reproducible Research: Peer Assessment 1
+======================================================
 
+## step 1. Load the data 
 
-## Loading and preprocessing the data
+```{r echo =TRUE}
+activity.data <- read.csv("activity.csv")
+apply(activity.data, 2, class)
+summary(activity.data)
+```
 
+Missing values: How many records with missing data?
+total number of records, missing values for each variable
+```{r}
+nrow(activity.data); sum(is.na(activity.data$steps)); sum(is.na(activity.data$date)); sum(is.na(activity.data$interval))
+```
 
+## step 2 preprocess the data
+
+#```{r}
+#activity.data$date <- as.Date(activity.data$date)
+#class(activity.data$date)
+```
+
+# Key results
 
 ## What is mean total number of steps taken per day?
 
+the mean number of steps taken per day regardless of missing values:
+```{r}
+sum(activity.data$steps, na.rm=TRUE)/61
+```
+Histogram of the total number of steps taken each day
+```{r}
+sum.steps.day <- aggregate(activity.data$steps, list(activity.data$date), sum)
+hist(sum.steps.day[,2], main = "Histogram of total number of steps taken each day", xlab = "steps", ylab = "freqeuncy - days", border = "red", col = "blue", )
+```
+
+mean steps taken per day
+```{r}
+steps.day <- aggregate(activity.data$steps, list(activity.data$date), sum)
+mean(steps.day$x, na.rm=TRUE)
+```
+median steps taken per day
+```{r}
+median(steps.day$x, na.rm=TRUE)
+```
 
 
 ## What is the average daily activity pattern?
