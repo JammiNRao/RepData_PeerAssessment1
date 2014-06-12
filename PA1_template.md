@@ -101,6 +101,20 @@ mean steps taken per day
 
 ```r
 steps.day <- aggregate(activity.data$steps, list(activity.data$date), sum)
+head(steps.day)
+```
+
+```
+##      Group.1     x
+## 1 2012-10-01    NA
+## 2 2012-10-02   126
+## 3 2012-10-03 11352
+## 4 2012-10-04 12116
+## 5 2012-10-05 13294
+## 6 2012-10-06 15420
+```
+
+```r
 mean(steps.day$x, na.rm=TRUE)
 ```
 
@@ -120,7 +134,61 @@ median(steps.day$x, na.rm=TRUE)
 
 ## What is the average daily activity pattern?
 
+```r
+complete.data <- activity.data[complete.cases(activity.data), ]
+sum(is.na(complete.data$steps))  ## check that NAs hv been removed
+```
 
+```
+## [1] 0
+```
+
+```r
+nrow(complete.data)
+```
+
+```
+## [1] 15264
+```
+
+```r
+steps.interval <- aggregate(complete.data$steps, list(complete.data$interval), mean)
+colnames(steps.interval) <- c("interval","mean.steps")
+nrow(steps.interval)
+```
+
+```
+## [1] 288
+```
+
+```r
+str(steps.interval)
+```
+
+```
+## 'data.frame':	288 obs. of  2 variables:
+##  $ interval  : int  0 5 10 15 20 25 30 35 40 45 ...
+##  $ mean.steps: num  1.717 0.3396 0.1321 0.1509 0.0755 ...
+```
+
+```r
+xyplot(mean.steps~interval, steps.interval, type ="l")
+```
+
+![plot of chunk unnamed-chunk-8](figure/unnamed-chunk-8.png) 
+
+the 5 minute interval that accounts for the max no of steps on average across all days
+
+```r
+tail(steps.interval[order(steps.interval$mean.steps), ], 1)
+```
+
+```
+##     interval mean.steps
+## 104      835      206.2
+```
+
+Answer: The 0835 to 0840 5 minute interval sees the most steps This is also shown in the time series plot
 
 ## Imputing missing values
 

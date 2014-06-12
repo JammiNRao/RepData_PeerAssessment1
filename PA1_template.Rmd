@@ -43,6 +43,8 @@ histogram(~x, data = sum.steps.day, xlab = "steps",ylab = "freqeuncy - days", ma
 mean steps taken per day
 ```{r}
 steps.day <- aggregate(activity.data$steps, list(activity.data$date), sum)
+head(steps.day)
+
 mean(steps.day$x, na.rm=TRUE)
 ```
 median steps taken per day
@@ -52,8 +54,23 @@ median(steps.day$x, na.rm=TRUE)
 
 
 ## What is the average daily activity pattern?
+```{r}
+complete.data <- activity.data[complete.cases(activity.data), ]
+sum(is.na(complete.data$steps))  ## check that NAs hv been removed
+nrow(complete.data)
+steps.interval <- aggregate(complete.data$steps, list(complete.data$interval), mean)
+colnames(steps.interval) <- c("interval","mean.steps")
+nrow(steps.interval)
+str(steps.interval)
+xyplot(mean.steps~interval, steps.interval, type ="l")
+```
 
+the 5 minute interval that accounts for the max no of steps on average across all days
+```{r}
+tail(steps.interval[order(steps.interval$mean.steps), ], 1)
+```
 
+Answer: The 0835 to 0840 5 minute interval sees the most steps This is also shown in the time series plot
 
 ## Imputing missing values
 
