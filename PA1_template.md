@@ -53,10 +53,25 @@ nrow(activity.data); sum(is.na(activity.data$steps)); sum(is.na(activity.data$da
 ```
 
 ## step 2 preprocess the data
+convert steps to numeric might be useful later.
+convert date to type Date
 
-#```{r}
-#activity.data$date <- as.Date(activity.data$date)
-#class(activity.data$date)
+```r
+activity.data$steps <- as.numeric(activity.data$steps)
+activity.data$date <- as.Date(activity.data$date)
+class(activity.data$steps)
+```
+
+```
+## [1] "numeric"
+```
+
+```r
+class(activity.data$date)
+```
+
+```
+## [1] "Date"
 ```
 
 # Key results
@@ -76,10 +91,11 @@ Histogram of the total number of steps taken each day
 
 ```r
 sum.steps.day <- aggregate(activity.data$steps, list(activity.data$date), sum)
-hist(sum.steps.day[,2], main = "Histogram of total number of steps taken each day", xlab = "steps", ylab = "freqeuncy - days", border = "red", col = "blue", )
+library(lattice)
+histogram(~x, data = sum.steps.day, xlab = "steps",ylab = "freqeuncy - days", main = "Histogram of total number of steps taken each day" )
 ```
 
-![plot of chunk unnamed-chunk-4](figure/unnamed-chunk-4.png) 
+![plot of chunk unnamed-chunk-5](figure/unnamed-chunk-5.png) 
 
 mean steps taken per day
 
