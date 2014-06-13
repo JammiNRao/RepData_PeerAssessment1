@@ -231,6 +231,7 @@ convert date to type Date</p>
 
 <pre><code class="r">activity.data$steps &lt;- as.numeric(activity.data$steps)
 activity.data$date &lt;- as.Date(activity.data$date)
+activity.data$interval &lt;- as.integer(activity.data$interval)
 class(activity.data$steps)
 </code></pre>
 
@@ -241,6 +242,15 @@ class(activity.data$steps)
 </code></pre>
 
 <pre><code>## [1] &quot;Date&quot;
+</code></pre>
+
+<pre><code class="r">str(activity.data)
+</code></pre>
+
+<pre><code>## &#39;data.frame&#39;:    17568 obs. of  3 variables:
+##  $ steps   : num  NA NA NA NA NA NA NA NA NA NA ...
+##  $ date    : Date, format: &quot;2012-10-01&quot; &quot;2012-10-01&quot; ...
+##  $ interval: int  0 5 10 15 20 25 30 35 40 45 ...
 </code></pre>
 
 <h1>Key results</h1>
@@ -338,9 +348,71 @@ nrow(steps.interval)
 ## 104      835      206.2
 </code></pre>
 
-<p>Answer: The 0835 to 0840 5 minute interval sees the most steps This is also shown in the time series plot</p>
+<p>Answer: The 0835 to 0840 5 minute interval sees the most steps This is also shown in the time series plot.</p>
 
 <h2>Imputing missing values</h2>
+
+<p>My strategy is to assume that activity level in a given 5 minute interval is pretty much the same each day.
+very likely there is some variation between weekday vs weekend and even across the day of the week
+But to kep it simple I have assumed that it would be reasonable to replace a missing value with the mean for 
+that timeslot across all the days for which there is data. i.e I have not made any adjustments for w/day / w/end.
+The following function does the imnputatation</p>
+
+<pre><code class="r">replaceNA &lt;- function(activity.data) {
+   for (i in 1 : nrow(activity.data)) {
+      if (is.na(activity.data[i, 1])) {
+        for (j in 1 : nrow(steps.interval)) {
+          if (activity.data[i, 3] == steps.interval[j, 1]) {
+            #print(i); print(j)
+            #print(steps.interval[j, 2])
+            activity.data[i, 1] &lt;- steps.interval[j, 2]
+            #print(activity.data[i, 1])
+          } # end of inner if
+        } # end of inner for loop
+      } #end if
+   }#end of 1st for loop
+return(activity.data)
+} # endfunction
+</code></pre>
+
+<p>Run the replaceNA function</p>
+
+<pre><code class="r">imputed.data &lt;- replaceNA(activity.data)
+</code></pre>
+
+<p>Check that it has worked There should be no NAs in imputed.data</p>
+
+<pre><code class="r">head(imputed.data)
+</code></pre>
+
+<pre><code>##     steps       date interval
+## 1 1.71698 2012-10-01        0
+## 2 0.33962 2012-10-01        5
+## 3 0.13208 2012-10-01       10
+## 4 0.15094 2012-10-01       15
+## 5 0.07547 2012-10-01       20
+## 6 2.09434 2012-10-01       25
+</code></pre>
+
+<pre><code class="r">tail(imputed.data)
+</code></pre>
+
+<pre><code>##        steps       date interval
+## 17563 2.6038 2012-11-30     2330
+## 17564 4.6981 2012-11-30     2335
+## 17565 3.3019 2012-11-30     2340
+## 17566 0.6415 2012-11-30     2345
+## 17567 0.2264 2012-11-30     2350
+## 17568 1.0755 2012-11-30     2355
+</code></pre>
+
+<pre><code class="r">sum(is.na(imputed.data$steps))
+</code></pre>
+
+<pre><code>## [1] 0
+</code></pre>
+
+<p>It works!!</p>
 
 <h2>Are there differences in activity patterns between weekdays and weekends?</h2>
 

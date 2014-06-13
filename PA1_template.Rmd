@@ -21,8 +21,10 @@ convert date to type Date
 ```{r}
 activity.data$steps <- as.numeric(activity.data$steps)
 activity.data$date <- as.Date(activity.data$date)
+activity.data$interval <- as.integer(activity.data$interval)
 class(activity.data$steps)
 class(activity.data$date)
+str(activity.data)
 ```
 
 # Key results
@@ -70,10 +72,48 @@ the 5 minute interval that accounts for the max no of steps on average across al
 tail(steps.interval[order(steps.interval$mean.steps), ], 1)
 ```
 
-Answer: The 0835 to 0840 5 minute interval sees the most steps This is also shown in the time series plot
+Answer: The 0835 to 0840 5 minute interval sees the most steps This is also shown in the time series plot.
 
 ## Imputing missing values
+My strategy is to assume that activity level in a given 5 minute interval is pretty much the same each day.
+very likely there is some variation between weekday vs weekend and even across the day of the week
+But to kep it simple I have assumed that it would be reasonable to replace a missing value with the mean for 
+that timeslot across all the days for which there is data. i.e I have not made any adjustments for w/day / w/end.
+The following function does the imnputatation
 
+```{r}
+replaceNA <- function(activity.data) {
+   for (i in 1 : nrow(activity.data)) {
+      if (is.na(activity.data[i, 1])) {
+        for (j in 1 : nrow(steps.interval)) {
+          if (activity.data[i, 3] == steps.interval[j, 1]) {
+            #print(i); print(j)
+            #print(steps.interval[j, 2])
+            activity.data[i, 1] <- steps.interval[j, 2]
+            #print(activity.data[i, 1])
+          } # end of inner if
+        } # end of inner for loop
+      } #end if
+   }#end of 1st for loop
+return(activity.data)
+} # endfunction
 
+```
+
+Run the replaceNA function
+```{r}
+imputed.data <- replaceNA(activity.data)
+
+```
+
+Check that it has worked There should be no NAs in imputed.data
+
+```{r}
+head(imputed.data)
+tail(imputed.data)
+sum(is.na(imputed.data$steps))
+```
+
+It works!!
 
 ## Are there differences in activity patterns between weekdays and weekends?
