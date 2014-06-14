@@ -52,9 +52,10 @@ nrow(activity.data); sum(is.na(activity.data$steps)); sum(is.na(activity.data$da
 ## [1] 0
 ```
 
-## step 2 preprocess the data
-convert steps to numeric might be useful later.
-convert date to type Date
+## step 2. preprocess the data
+convert steps to numeric;  might be useful later.
+convert date to type Date, will allow use of weekdays() function 
+convert interval to type integer
 
 ```r
 activity.data$steps <- as.numeric(activity.data$steps)
@@ -88,7 +89,7 @@ str(activity.data)
 
 # Key results
 
-## What is mean total number of steps taken per day?
+## step3 . What is mean total number of steps taken per day?
 
 the mean number of steps taken per day regardless of missing values:
 
@@ -99,10 +100,21 @@ sum(activity.data$steps, na.rm=TRUE)/61
 ```
 ## [1] 9354
 ```
+
 Histogram of the total number of steps taken each day
 
 ```r
 sum.steps.day <- aggregate(activity.data$steps, list(activity.data$date), sum)
+str(sum.steps.day)
+```
+
+```
+## 'data.frame':	61 obs. of  2 variables:
+##  $ Group.1: Date, format: "2012-10-01" "2012-10-02" ...
+##  $ x      : num  NA 126 11352 12116 13294 ...
+```
+
+```r
 library(lattice)
 histogram(~x, data = sum.steps.day, xlab = "steps",ylab = "freqeuncy - days", main = "Histogram of total number of steps taken each day" )
 ```
@@ -113,17 +125,13 @@ mean steps taken per day
 
 ```r
 steps.day <- aggregate(activity.data$steps, list(activity.data$date), sum)
-head(steps.day)
+str(steps.day)
 ```
 
 ```
-##      Group.1     x
-## 1 2012-10-01    NA
-## 2 2012-10-02   126
-## 3 2012-10-03 11352
-## 4 2012-10-04 12116
-## 5 2012-10-05 13294
-## 6 2012-10-06 15420
+## 'data.frame':	61 obs. of  2 variables:
+##  $ Group.1: Date, format: "2012-10-01" "2012-10-02" ...
+##  $ x      : num  NA 126 11352 12116 13294 ...
 ```
 
 ```r
@@ -144,7 +152,7 @@ median(steps.day$x, na.rm=TRUE)
 ```
 
 
-## What is the average daily activity pattern?
+## step 4. What is the average daily activity pattern?
 
 ```r
 complete.data <- activity.data[complete.cases(activity.data), ]
@@ -202,7 +210,7 @@ tail(steps.interval[order(steps.interval$mean.steps), ], 1)
 
 Answer: The 0835 to 0840 5 minute interval sees the most steps This is also shown in the time series plot.
 
-## Imputing missing values
+## step 5. Impute missing values
 My strategy is to assume that activity level in a given 5 minute interval is pretty much the same each day.
 very likely there is some variation between weekday vs weekend and even across the day of the week
 But to kep it simple I have assumed that it would be reasonable to replace a missing value with the mean for 
@@ -212,18 +220,18 @@ The following function does the imnputatation
 
 ```r
 replaceNA <- function(activity.data) {
-   for (i in 1 : nrow(activity.data)) {
-      if (is.na(activity.data[i, 1])) {
-        for (j in 1 : nrow(steps.interval)) {
-          if (activity.data[i, 3] == steps.interval[j, 1]) {
-            #print(i); print(j)
-            #print(steps.interval[j, 2])
-            activity.data[i, 1] <- steps.interval[j, 2]
-            #print(activity.data[i, 1])
-          } # end of inner if
-        } # end of inner for loop
-      } #end if
-   }#end of 1st for loop
+        for (i in 1 : nrow(activity.data)) {
+                if (is.na(activity.data[i, 1])) {
+                        for (j in 1 : nrow(steps.interval)) {
+                                if (activity.data[i, 3] == steps.interval[j, 1]) {
+                                #print(i); print(j)
+                                #print(steps.interval[j, 2])
+                                activity.data[i, 1] <- steps.interval[j, 2]
+                                #print(activity.data[i, 1])
+                                } # end of inner if
+                        } # end of inner for loop
+                } #end if
+        }#end of 1st for loop
 return(activity.data)
 } # endfunction
 ```
@@ -238,31 +246,16 @@ Check that it has worked There should be no NAs in imputed.data
 
 
 ```r
-head(imputed.data)
+#head(imputed.data)
+#tail(imputed.data)
+str(imputed.data)
 ```
 
 ```
-##     steps       date interval
-## 1 1.71698 2012-10-01        0
-## 2 0.33962 2012-10-01        5
-## 3 0.13208 2012-10-01       10
-## 4 0.15094 2012-10-01       15
-## 5 0.07547 2012-10-01       20
-## 6 2.09434 2012-10-01       25
-```
-
-```r
-tail(imputed.data)
-```
-
-```
-##        steps       date interval
-## 17563 2.6038 2012-11-30     2330
-## 17564 4.6981 2012-11-30     2335
-## 17565 3.3019 2012-11-30     2340
-## 17566 0.6415 2012-11-30     2345
-## 17567 0.2264 2012-11-30     2350
-## 17568 1.0755 2012-11-30     2355
+## 'data.frame':	17568 obs. of  3 variables:
+##  $ steps   : num  1.717 0.3396 0.1321 0.1509 0.0755 ...
+##  $ date    : Date, format: "2012-10-01" "2012-10-01" ...
+##  $ interval: int  0 5 10 15 20 25 30 35 40 45 ...
 ```
 
 ```r
@@ -275,21 +268,9 @@ sum(is.na(imputed.data$steps))
 
 It works!!
 
-## Are there differences in activity patterns between weekdays and weekends?
+## step 6. Are there differences in activity patterns between weekdays and weekends?
 
 add a variable to the dataframe imputed.data to show whether its a weekend or a weekday
-
-
-```r
-str(imputed.data)
-```
-
-```
-## 'data.frame':	17568 obs. of  3 variables:
-##  $ steps   : num  1.717 0.3396 0.1321 0.1509 0.0755 ...
-##  $ date    : Date, format: "2012-10-01" "2012-10-01" ...
-##  $ interval: int  0 5 10 15 20 25 30 35 40 45 ...
-```
 
 
 ```r
@@ -308,8 +289,8 @@ str(imputed.data)
 ```
 
 ```r
-imputed.data$weekend <- as.factor(imputed.data$weekend)
-table(imputed.data$weekend)
+imputed.data$weekend <- as.factor(imputed.data$weekend) # may not be a necessary step
+table(imputed.data$weekend) # weekends to weekdays should be about 2:5 ratio
 ```
 
 ```
@@ -322,14 +303,18 @@ table(imputed.data$weekend)
 library(lattice)
 attach(imputed.data)
 xyplot(steps~interval|weekend, type = "l", 
-       main = "Activity by time slots",
+       main = "Activity by time slots", 
        layout = c(1,2))
 ```
 
-![plot of chunk unnamed-chunk-14](figure/unnamed-chunk-14.png) 
+![plot of chunk unnamed-chunk-13](figure/unnamed-chunk-13.png) 
+
+```r
+detach(imputed.data)
+```
 
 Panel plot of steps against time slots to show weekday / weekend differences.
 My conclusion: Weekday activity starts much earlier in the day. On weekends starts laterand appears to peak late afternoon / early evening.
 
-
+End of exercise
 
