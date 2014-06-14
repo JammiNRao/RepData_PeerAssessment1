@@ -314,6 +314,7 @@ str(steps.interval.weekend)
 
 ```r
 names(steps.interval.weekend) <- c("interval","weekend","steps")
+save(steps.interval.weekend, file="steps.interval.weekend.Rda")
 library(lattice)
 attach(steps.interval.weekend)
 xyplot(steps~interval|weekend, type = "l", 
@@ -330,6 +331,15 @@ detach(steps.interval.weekend)
 
 Panel plot of steps against time slots to show weekday / weekend differences.
 My conclusion: Weekday activity starts much earlier in the day. On weekends starts laterand appears to peak late afternoon / early evening.
+
+# Extra graphs using ggplot2
+
+```r
+library(ggplot2)
+qplot(interval,steps,data=steps.interval.weekend, facets=weekend ~ ., geom="line", xlab = "5-minute time intervals over a 24-hour peiod", ylab = "Number of steps averaged over 61 days, some data imputed")
+```
+
+![plot of chunk unnamed-chunk-14](figure/unnamed-chunk-14.png) 
 
 End of exercise
 
