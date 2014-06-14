@@ -300,17 +300,32 @@ table(imputed.data$weekend) # weekends to weekdays should be about 2:5 ratio
 ```
 
 ```r
+steps.interval.weekend <- aggregate(imputed.data$steps, 
+                        list(imputed.data$interval, imputed.data$weekend), mean)
+str(steps.interval.weekend)
+```
+
+```
+## 'data.frame':	576 obs. of  3 variables:
+##  $ Group.1: int  0 5 10 15 20 25 30 35 40 45 ...
+##  $ Group.2: Factor w/ 2 levels "Weekday","Weekend": 1 1 1 1 1 1 1 1 1 1 ...
+##  $ x      : num  2.251 0.445 0.173 0.198 0.099 ...
+```
+
+```r
+names(steps.interval.weekend) <- c("interval","weekend","steps")
 library(lattice)
-attach(imputed.data)
+attach(steps.interval.weekend)
 xyplot(steps~interval|weekend, type = "l", 
-       main = "Activity by time slots", 
+       main = "Activity by time slots", ylab = "Number of steps averaged across all days",
+       xlab = "5-minute time intervals over a 24-hour period",
        layout = c(1,2))
 ```
 
 ![plot of chunk unnamed-chunk-13](figure/unnamed-chunk-13.png) 
 
 ```r
-detach(imputed.data)
+detach(steps.interval.weekend)
 ```
 
 Panel plot of steps against time slots to show weekday / weekend differences.
