@@ -276,3 +276,60 @@ sum(is.na(imputed.data$steps))
 It works!!
 
 ## Are there differences in activity patterns between weekdays and weekends?
+
+add a variable to the dataframe imputed.data to show whether its a weekend or a weekday
+
+
+```r
+str(imputed.data)
+```
+
+```
+## 'data.frame':	17568 obs. of  3 variables:
+##  $ steps   : num  1.717 0.3396 0.1321 0.1509 0.0755 ...
+##  $ date    : Date, format: "2012-10-01" "2012-10-01" ...
+##  $ interval: int  0 5 10 15 20 25 30 35 40 45 ...
+```
+
+
+```r
+fun.days <- c("Saturday", "Sunday")
+imputed.data$weekend <- ifelse(weekdays(imputed.data$date) %in% fun.days, c("Weekend"),
+                               c("Weekday") ) 
+str(imputed.data)
+```
+
+```
+## 'data.frame':	17568 obs. of  4 variables:
+##  $ steps   : num  1.717 0.3396 0.1321 0.1509 0.0755 ...
+##  $ date    : Date, format: "2012-10-01" "2012-10-01" ...
+##  $ interval: int  0 5 10 15 20 25 30 35 40 45 ...
+##  $ weekend : chr  "Weekday" "Weekday" "Weekday" "Weekday" ...
+```
+
+```r
+imputed.data$weekend <- as.factor(imputed.data$weekend)
+table(imputed.data$weekend)
+```
+
+```
+## 
+## Weekday Weekend 
+##   12960    4608
+```
+
+```r
+library(lattice)
+attach(imputed.data)
+xyplot(steps~interval|weekend, type = "l", 
+       main = "Activity by time slots",
+       layout = c(1,2))
+```
+
+![plot of chunk unnamed-chunk-14](figure/unnamed-chunk-14.png) 
+
+Panel plot of steps against time slots to show weekday / weekend differences.
+My conclusion: Weekday activity starts much earlier in the day. On weekends starts laterand appears to peak late afternoon / early evening.
+
+
+
