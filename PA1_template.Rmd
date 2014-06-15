@@ -59,7 +59,7 @@ median(steps.day$x, na.rm=TRUE)
 
 
 ## step 4. What is the average daily activity pattern?
-```{r}
+```{r meansteps}
 complete.data <- activity.data[complete.cases(activity.data), ]
 sum(is.na(complete.data$steps))  ## check that NAs hv been removed
 nrow(complete.data)
@@ -84,7 +84,7 @@ But to kep it simple I have assumed that it would be reasonable to replace a mis
 that timeslot across all the days for which there is data. i.e I have not made any adjustments for w/day / w/end.
 The following function does the imnputatation
 
-```{r}
+```{r ReplaceMissing}
 replaceNA <- function(activity.data) {
         for (i in 1 : nrow(activity.data)) {
                 if (is.na(activity.data[i, 1])) {
@@ -124,7 +124,7 @@ It works!!
 
 add a variable to the dataframe imputed.data to show whether its a weekend or a weekday
 
-```{r}
+```{r weekendplot1}
 fun.days <- c("Saturday", "Sunday")
 imputed.data$weekend <- ifelse(weekdays(imputed.data$date) %in% fun.days, c("Weekend"),
                                c("Weekday") ) 
@@ -150,7 +150,7 @@ Panel plot of steps against time slots to show weekday / weekend differences.
 My conclusion: Weekday activity starts much earlier in the day. On weekends starts laterand appears to peak late afternoon / early evening.
 
 # Extra graphs using ggplot2
-```{r}
+```{r weekendplot2}
 library(ggplot2)
 qplot(interval,steps,data=steps.interval.weekend, facets=weekend ~ ., geom="line", xlab = "5-minute time intervals over a 24-hour peiod", ylab = "Number of steps averaged over 61 days, some data imputed")
 ```

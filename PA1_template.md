@@ -195,7 +195,7 @@ str(steps.interval)
 xyplot(mean.steps~interval, steps.interval, type ="l")
 ```
 
-![plot of chunk unnamed-chunk-8](figure/unnamed-chunk-8.png) 
+![plot of chunk meansteps](figure/meansteps.png) 
 
 the 5 minute interval that accounts for the max no of steps on average across all days
 
@@ -323,7 +323,7 @@ xyplot(steps~interval|weekend, type = "l",
        layout = c(1,2))
 ```
 
-![plot of chunk unnamed-chunk-13](figure/unnamed-chunk-13.png) 
+![plot of chunk weekendplot1](figure/weekendplot1.png) 
 
 ```r
 detach(steps.interval.weekend)
@@ -339,7 +339,7 @@ library(ggplot2)
 qplot(interval,steps,data=steps.interval.weekend, facets=weekend ~ ., geom="line", xlab = "5-minute time intervals over a 24-hour peiod", ylab = "Number of steps averaged over 61 days, some data imputed")
 ```
 
-![plot of chunk unnamed-chunk-14](figure/unnamed-chunk-14.png) 
+![plot of chunk weekendplot2](figure/weekendplot2.png) 
 
 End of exercise
 
